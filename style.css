@@ -288,3 +288,9 @@ canvas {
   z-index: 1;
   position: relative;
 }
+/* Fix: Ensure slider thumbs stay interactive */
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb {
+  cursor: default !important;
+}
+
