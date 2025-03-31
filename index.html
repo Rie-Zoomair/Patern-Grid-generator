@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pattern Grid Generator</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+    <script src="sketch.js" defer></script>
+  </head>
+  <body>
+    <div class="grid-container">
+      <div id="controls" class="ui-column">
+        <!-- Shape buttons -->
+        <div class="top-button-row">
+          <button onclick="toggleShape('square')">square</button>
+          <button onclick="toggleShape('triangle')">triangle</button>
+          <button onclick="toggleShape('abstract')">abstract</button>
+          <button onclick="toggleShape('circle')">circle</button>
+        </div>
+        
+           <!-- Variant buttons (1–4 expected) -->
+        <div id="variantButtons" class="top-button-row">
+          <button onclick="toggleVariant(1)">variant 1</button>
+          <button onclick="toggleVariant(2)">variant 2</button>
+          <button onclick="toggleVariant(3)">variant 3</button>
+          <button onclick="toggleVariant(4)">variant 4</button>
+        </div>
+
+        <!-- Sliders -->
+        <input type="range" id="gridSlider" min="2" max="40" value="10" />
+        <input type="range" id="gutterSlider" min="0" max="60" value="0" />
+        <input
+          type="range"
+          id="blankChanceSlider"
+          min="0"
+          max="100"
+          value="25"
+        />
+
+        <!-- Final buttons -->
+        <div class="button-pair">
+          <button class="full-width" onclick="generateRandomPattern()">
+            randomize
+          </button>
+          <button class="full-width" onclick="exportPNG()">save</button>
+        </div>
+      </div>
+
+      <div id="canvasContainer" class="canvas-column"></div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip-container">
+      <div class="tooltip-icon">?</div>
+      <div class="tooltip-text">
+        <strong>Controls</strong><br /><br />
+        ⎵ Space – New pattern<br />
+        S – Save PNG<br />
+        Click – Cycle forward<br />
+        Right click – Cycle backward<br />
+        Shift + Click – Random shape/variant<br />
+      </div>
+    </div>
+  </body>
+</html>
