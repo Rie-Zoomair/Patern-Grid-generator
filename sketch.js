@@ -258,10 +258,94 @@ function drawCustomSVGShape1(size, level = 1) {
     arc(r, r, size, size, PI, PI + HALF_PI);
   }
 }
-
-function exportPNG() {
-  saveCanvas("grid-art-highres", "png");
+function drawShapeOnGraphics(pg, type, size, complexity = 1) {
+  if (type === "square") {
+    if (complexity === 1) {
+      pg.rect(0, 0, size, size);
+    } else if (complexity === 2) {
+      for (let i = -1; i <= 1; i++) {
+        pg.rect(i * size * 0.3, 0, size * 0.2, size);
+      }
+    } else if (complexity === 3) {
+      pg.rotate(PI / 4);
+      pg.rect(0, 0, size * 0.7, size * 0.7);
+    } else if (complexity === 4) {
+      for (let i = -3; i <= 3; i++) {
+        pg.rect(i * size * 0.15, 0, size * 0.08, size);
+      }
+    }
+  } else if (type === "triangle") {
+    if (complexity === 1) {
+      pg.triangle(-size / 2, -size / 2, size / 2, size / 2, -size / 2, size / 2);
+    } else if (complexity === 2) {
+      pg.triangle(-size / 2, size / 2, 0, -size / 2, size / 2, size / 2);
+    }
+  } else if (type === "circle") {
+    if (complexity === 1) {
+      pg.ellipse(0, 0, size, size);
+    } else if (complexity === 2) {
+      pg.arc(0, 0, size, size, PI, TWO_PI, PIE);
+    }
+  } else if (type === "abstract") {
+    if (complexity === 1) {
+      pg.beginShape();
+      pg.vertex(-size * 0.5, -size * 0.5);
+      pg.bezierVertex(
+        -size * 0.5,
+        size * 0.3,
+        size * 0.5,
+        -size * 0.3,
+        size * 0.5,
+        size * 0.5
+      );
+      pg.vertex(-size * 0.5, size * 0.5);
+      pg.endShape(CLOSE);
+    } else if (complexity === 2) {
+      pg.noFill();
+      pg.stroke(0);
+      pg.strokeWeight(2);
+      const r = size / 2;
+      pg.arc(-r, -r, size, size, 0, HALF_PI);
+      pg.arc(r, r, size, size, PI, PI + HALF_PI);
+    }
+  }
 }
+function exportPNG() {
+  const exportSize = 2000;
+  const pg = createGraphics(exportSize, exportSize);
+  const originalShapes = [...shapes];
+
+  // Rechne neues gridSize für Export
+  const exportGutter = gutter;
+  const exportGridSize = (exportSize - (gridDensity - 1) * exportGutter) / gridDensity;
+  const totalCellSize = exportGridSize + exportGutter;
+  const offsetX = (exportSize - totalCellSize * gridDensity + exportGutter) / 2;
+  const offsetY = (exportSize - totalCellSize * gridDensity + exportGutter) / 2;
+
+  pg.noStroke();
+  pg.fill(0);
+  pg.angleMode(RADIANS);
+  pg.ellipseMode(CENTER);
+  pg.rectMode(CENTER);
+
+  for (let shape of originalShapes) {
+    if (!shape.visible) continue;
+
+    const cx = offsetX + shape.x / canvasWidth * exportSize + exportGridSize / 2;
+    const cy = offsetY + shape.y / canvasHeight * exportSize + exportGridSize / 2;
+
+    pg.push();
+    pg.translate(cx, cy);
+    pg.rotate(shape.rotationIndex * HALF_PI);
+    pg.scale(1); // Kein Hover-Effekt beim Export
+
+    drawShapeOnGraphics(pg, shape.shapeType, exportGridSize, shape.complexity);
+    pg.pop();
+  }
+
+  save(pg, "grid-art-highres.png");
+}
+
 
 function mousePressed() {
   for (let shape of shapes) {
